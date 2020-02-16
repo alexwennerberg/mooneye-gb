@@ -15,6 +15,7 @@ failure = "0.1"
 glium = "0.24"
 imgui = { git = "https://github.com/Gekkio/imgui-rs.git", rev = "41d6ccc6b3e56e157f094fbf66233d7c005b3a0e" }
 imgui-glium-renderer = { git = "https://github.com/Gekkio/imgui-rs.git", rev = "41d6ccc6b3e56e157f094fbf66233d7c005b3a0e" }
+lazy_static = "1"
 log = "0.4"
 mooneye-gb-core = { version = "0.2.0-pre", path = "core" }
 nalgebra = "0.18"

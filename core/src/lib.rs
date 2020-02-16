@@ -13,6 +13,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Mooneye GB.  If not, see <http://www.gnu.org/licenses/>.
+//
+#[macro_use]
+extern crate lazy_static;
+
 pub mod config;
 mod cpu;
 pub mod emulation;

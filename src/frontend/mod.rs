@@ -187,7 +187,7 @@ impl SdlFrontend {
 
     fps_counter.update(delta_s);
     screen.fps = fps_counter.get_fps();
-    screen.perf = 100.0 * perf_counter.get_machine_cycles_per_s() * 4.0 / CPU_SPEED_HZ as f64;
+    screen.perf = 100.0 * perf_counter.get_machine_cycles_per_s() * 4.0 / *CPU_SPEED_HZ as f64;
 
     let renderer = &mut self.renderer;
     let imgui = &mut self.imgui;
@@ -202,7 +202,7 @@ impl SdlFrontend {
     let ui = imgui.frame(frame_size, delta_s as f32);
 
     let machine_cycles =
-      EmuTime::from_machine_cycles(((delta * CPU_SPEED_HZ as u32).as_secs() as u64) / 4);
+      EmuTime::from_machine_cycles(((delta * *CPU_SPEED_HZ as u32).as_secs() as u64) / 4);
 
     let target_time = emu_time + machine_cycles;
     loop {
@@ -332,7 +332,7 @@ impl SdlFrontend {
 
       fps_counter.update(delta_s);
       screen.fps = fps_counter.get_fps();
-      screen.perf = 100.0 * perf_counter.get_machine_cycles_per_s() * 4.0 / CPU_SPEED_HZ as f64;
+      screen.perf = 100.0 * perf_counter.get_machine_cycles_per_s() * 4.0 / *CPU_SPEED_HZ as f64;
 
       let renderer = &mut self.renderer;
       let display = &self.display;
@@ -457,7 +457,7 @@ impl SdlFrontend {
       let ui = imgui.frame(frame_size, delta_s as f32);
 
       let machine_cycles =
-        EmuTime::from_machine_cycles(((delta * CPU_SPEED_HZ as u32).as_secs() as u64) / 4);
+        EmuTime::from_machine_cycles(((delta * *CPU_SPEED_HZ as u32).as_secs() as u64) / 4);
 
       let target_time = emu_time + machine_cycles;
       loop {
@@ -632,7 +632,7 @@ impl SdlFrontend {
       let ui = imgui.frame(frame_size, delta_s as f32);
 
       if let Some(tick) = handle.check_tick() {
-        screen.perf = 100.0 * tick.cycles_per_s * 4.0 / CPU_SPEED_HZ as f64;
+        screen.perf = 100.0 * tick.cycles_per_s * 4.0 / *CPU_SPEED_HZ as f64;
         if tick.screen_buffer_updated {
           renderer.update_pixels(&tick.screen_buffer);
         }

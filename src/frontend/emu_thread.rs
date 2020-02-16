@@ -94,7 +94,7 @@ fn run(
       }
     }
 
-    let machine_cycles = EmuTime::from_machine_cycles(CPU_SPEED_HZ as u64 / 60 / 4);
+    let machine_cycles = EmuTime::from_machine_cycles(*CPU_SPEED_HZ as u64 / 60 / 4);
     let target_time = emu_time + machine_cycles;
     loop {
       let (events, end_time) = machine.emulate(target_time);

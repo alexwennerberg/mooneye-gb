@@ -16,6 +16,8 @@
 pub type HiramData = [u8; HIRAM_SIZE];
 pub type ScreenBuffer = [Color; SCREEN_PIXELS];
 
+use std::env;
+
 #[derive(Debug, PartialEq, Clone, Copy)]
 #[repr(u8)]
 pub enum Color {
@@ -49,7 +51,9 @@ impl Into<u8> for Color {
   }
 }
 
-pub const CPU_SPEED_HZ: usize = 4_194_304;
+lazy_static! {
+    pub static ref CPU_SPEED_HZ: usize = 4_194_304 * env::var("WARP_SPEED").unwrap_or("1".to_string()).parse::<usize>().unwrap();
+}
 pub const HIRAM_SIZE: usize = 0x80;
 pub const HIRAM_EMPTY: HiramData = [0; HIRAM_SIZE];
 pub const ROM_BANK_SIZE: usize = 0x4000;
