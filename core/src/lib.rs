@@ -17,7 +17,7 @@ pub mod config;
 mod cpu;
 pub mod emulation;
 pub mod gameboy;
-mod hardware;
+pub mod hardware;
 pub mod machine;
 mod util;
 

@@ -39,7 +39,7 @@ pub mod irq;
 mod joypad;
 mod serial;
 mod timer;
-mod work_ram;
+pub mod work_ram;
 
 pub trait MappedHardware<A, D: From<u8> + Into<u8> = u8> {
   fn read_cycle<I: InterruptRequest>(&mut self, addr: A, intr_req: &mut I) -> D;
@@ -66,7 +66,7 @@ pub trait Bus {
 pub struct Hardware {
   pub bootrom: Bootrom,
   pub cartridge: Cartridge,
-  work_ram: WorkRam,
+  pub work_ram: WorkRam,
   hiram: HiramData,
   gpu: Gpu,
   apu: Apu,
