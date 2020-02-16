@@ -40,7 +40,7 @@ pub mod irq;
 mod joypad;
 mod serial;
 mod timer;
-mod work_ram;
+pub mod work_ram;
 
 pub trait Bus: CpuContext {
   fn trigger_emu_events(&mut self, events: EmuEvents);
@@ -50,7 +50,7 @@ pub trait Bus: CpuContext {
 pub struct Hardware {
   pub bootrom: Bootrom,
   pub cartridge: Cartridge,
-  work_ram: WorkRam,
+  pub work_ram: WorkRam,
   hiram: HiramData,
   gpu: Gpu,
   apu: Apu,

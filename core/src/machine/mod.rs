@@ -24,7 +24,7 @@ use crate::GbKey;
 #[derive(Clone)]
 pub struct Machine {
   cpu: Cpu,
-  hardware: Hardware,
+  pub hardware: Hardware,
   step: Step,
 }
 
