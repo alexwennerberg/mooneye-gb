@@ -2,7 +2,7 @@
 members = ["core"]
 
 [package]
-name = "mooneye-gb"
+name = "mooneye_gb"
 version = "0.2.0-pre"
 authors = ["Joonas Javanainen <joonas.javanainen@gmail.com>"]
 license = "GPL-3.0+"
