@@ -60,7 +60,7 @@ struct Args {
   flag_model: Option<Model>,
 }
 
-fn read_boot_rom(path: &str, expected_model: Option<Model>) -> Bootrom {
+pub fn read_boot_rom(path: &str, expected_model: Option<Model>) -> Bootrom {
   let bootrom = Bootrom::from_path(&Path::new(path)).unwrap_or_else(|err| {
     error!("Failed to read boot rom from \"{}\" ({})", path, err);
     process::exit(1)
@@ -73,7 +73,7 @@ fn read_boot_rom(path: &str, expected_model: Option<Model>) -> Bootrom {
   bootrom
 }
 
-fn run() -> Result<(), Error> {
+pub fn run() -> Result<(), Error> {
   let args: Args = Docopt::new(USAGE)
     .and_then(|d| d.deserialize())
     .unwrap_or_else(|e| e.exit());
@@ -104,12 +104,4 @@ fn run() -> Result<(), Error> {
 
   let frontend = SdlFrontend::init()?;
   frontend.main(bootrom, cartridge)
-}
-
-fn main() {
-  if let Err(ref e) = run() {
-    error!("{:?}", e);
-
-    process::exit(1);
-  }
 }
