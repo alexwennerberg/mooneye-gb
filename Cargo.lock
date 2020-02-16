@@ -676,7 +676,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "mooneye_gb"
+name = "mooneye_gb_frontend"
 version = "0.2.0-pre"
 dependencies = [
  "arraydeque 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
