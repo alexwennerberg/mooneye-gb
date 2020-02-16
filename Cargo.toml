@@ -17,7 +17,7 @@ imgui = { git = "https://github.com/Gekkio/imgui-rs.git", rev = "41d6ccc6b3e56e1
 imgui-glium-renderer = { git = "https://github.com/Gekkio/imgui-rs.git", rev = "41d6ccc6b3e56e157f094fbf66233d7c005b3a0e" }
 lazy_static = "1"
 log = "0.4"
-mooneye-gb-core = { version = "0.2.0-pre", path = "core" }
+mooneye_gb_core = { version = "0.2.0-pre", path = "core" }
 nalgebra = "0.18"
 num-traits = "0.2"
 serde = "1.0"
@@ -32,4 +32,4 @@ criterion = "0.2"
 opt-level = 2
 
 [features]
-include-bootroms = ["mooneye-gb-core/include-bootroms"]
+include-bootroms = ["mooneye_gb_core/include-bootroms"]
