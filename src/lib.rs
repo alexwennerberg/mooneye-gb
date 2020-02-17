@@ -31,7 +31,7 @@ use crate::frontend::SdlFrontend;
 
 mod fps_counter;
 mod frame_times;
-mod frontend;
+pub mod frontend;
 mod perf_counter;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");

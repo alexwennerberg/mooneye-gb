@@ -58,7 +58,7 @@ enum FrontendState {
 
 pub struct InGameState {
   config: HardwareConfig,
-  machine: Machine,
+  pub machine: Machine,
   screen: gui::InGameScreen,
   fps_counter: FpsCounter,
   perf_counter: PerfCounter,
@@ -172,22 +172,21 @@ impl SdlFrontend {
           }
       }
   }
-  pub fn next_frame(&mut self, state: InGameState) -> Result<InGameState, Error> {
-    let InGameState {
-      config,
-      mut machine,
-      mut screen,
-      mut fps_counter,
-      mut perf_counter,
-    } = state;
-    let emu_time = machine.emu_time(); // start time
+  pub fn next_frame(&mut self, state: &mut InGameState) -> Result<(), Error> {
+    // let config = state.config;
+    // let mut machine = state.machine;
+    // let mut screen = state.screen;
+    // // let mut fps_counter = state.fps_counter;
+    // let mut perf_counter = state.perf_counter;
+    
+    let emu_time = state.machine.emu_time(); // start time
     // self.times.reset();
     let delta = self.times.update();
     let delta_s = delta.as_secs() as f64 + f64::from(delta.subsec_nanos()) / 1_000_000_000.0;
 
-    fps_counter.update(delta_s);
-    screen.fps = fps_counter.get_fps();
-    screen.perf = 100.0 * perf_counter.get_machine_cycles_per_s() * 4.0 / *CPU_SPEED_HZ as f64;
+    state.fps_counter.update(delta_s);
+    state.screen.fps = state.fps_counter.get_fps();
+    state.screen.perf = 100.0 * state.perf_counter.get_machine_cycles_per_s() * 4.0 / *CPU_SPEED_HZ as f64;
 
     let renderer = &mut self.renderer;
     let imgui = &mut self.imgui;
@@ -206,30 +205,24 @@ impl SdlFrontend {
 
     let target_time = emu_time + machine_cycles;
     loop {
-        let (events, end_time) = machine.emulate(target_time);
+        let (events, end_time) = state.machine.emulate(target_time);
         if events.contains(EmuEvents::VSYNC) {
-          renderer.update_pixels(machine.screen_buffer());
+          renderer.update_pixels(state.machine.screen_buffer());
         }
         if end_time >= target_time {
-          perf_counter.update(end_time - emu_time, delta_s);
+          state.perf_counter.update(end_time - emu_time, delta_s);
           break;
         }
       }
       renderer.draw(&mut target)?;
-      screen.render(&ui);
+      state.screen.render(&ui);
       self
         .gui_renderer
         .render(&mut target, ui)
         .map_err(|e| format_err!("GUI rendering failed: {}", e))?;
       target.finish()?;
       self.times.limit();
-  return Ok(InGameState {
-    config,
-    machine,
-    screen,
-    fps_counter,
-    perf_counter,
-  })
+  return Ok(())
 }
 
   pub fn main(
