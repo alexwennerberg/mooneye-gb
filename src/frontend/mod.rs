@@ -162,68 +162,58 @@ impl SdlFrontend {
       times: FrameTimes::new(Duration::from_secs(1) / 60),
     })
   }
-  pub fn load_cartridge(&mut self, bootrom: Option<Bootrom>, cartridge: Option<Cartridge>) -> Result<InGameState, Error>{
-      let mut state = FrontendState::from_roms(bootrom, cartridge);
-      loop {
-          state = match state {
-            FrontendState::WaitBootrom(cartridge) => self.main_wait_bootrom(cartridge)?,
-            FrontendState::InGame(state) => return Ok(state),
-            _ => panic!()
-          }
-      }
-  }
-  pub fn next_frame(&mut self, state: &mut InGameState) -> Result<(), Error> {
-    // let config = state.config;
-    // let mut machine = state.machine;
-    // let mut screen = state.screen;
-    // // let mut fps_counter = state.fps_counter;
-    // let mut perf_counter = state.perf_counter;
-    
-    let emu_time = state.machine.emu_time(); // start time
-    // self.times.reset();
-    let delta = self.times.update();
-    let delta_s = delta.as_secs() as f64 + f64::from(delta.subsec_nanos()) / 1_000_000_000.0;
-
-    state.fps_counter.update(delta_s);
-    state.screen.fps = state.fps_counter.get_fps();
-    state.screen.perf = 100.0 * state.perf_counter.get_machine_cycles_per_s() * 4.0 / *CPU_SPEED_HZ as f64;
-
-    let renderer = &mut self.renderer;
-    let imgui = &mut self.imgui;
-    let mut target = self.display.draw();
-    target.clear_color(0.0, 0.0, 0.0, 1.0);
-
-    let (width, height) = target.get_dimensions();
-    let frame_size = FrameSize {
-      logical_size: (width.into(), height.into()),
-      hidpi_factor: 1.0,
-    };
-    let ui = imgui.frame(frame_size, delta_s as f32);
-
-    let machine_cycles =
-      EmuTime::from_machine_cycles(((delta * *CPU_SPEED_HZ as u32).as_secs() as u64) / 4);
-
-    let target_time = emu_time + machine_cycles;
+  pub fn load_cartridge(
+    &mut self,
+    bootrom: Option<Bootrom>,
+    cartridge: Option<Cartridge>,
+  ) -> Result<InGameState, Error> {
+    let mut state = FrontendState::from_roms(bootrom, cartridge);
     loop {
-        let (events, end_time) = state.machine.emulate(target_time);
-        if events.contains(EmuEvents::VSYNC) {
-          renderer.update_pixels(state.machine.screen_buffer());
-        }
-        if end_time >= target_time {
-          state.perf_counter.update(end_time - emu_time, delta_s);
-          break;
-        }
+      state = match state {
+        FrontendState::WaitBootrom(cartridge) => self.main_wait_bootrom(cartridge)?,
+        FrontendState::InGame(state) => return Ok(state),
+        _ => panic!(),
       }
-      renderer.draw(&mut target)?;
-      state.screen.render(&ui);
-      self
-        .gui_renderer
-        .render(&mut target, ui)
-        .map_err(|e| format_err!("GUI rendering failed: {}", e))?;
-      target.finish()?;
-      self.times.limit();
-  return Ok(())
-}
+    }
+  }
+  pub fn next_frame(&mut self, state: &mut InGameState, draw: bool) -> Result<(), Error> {
+      // run 70,224 clock cycles
+    let clock_cycles_per_frame = 70_224;
+    if draw {
+        let delta = self.times.update();
+        let delta_s = delta.as_secs() as f64 + f64::from(delta.subsec_nanos()) / 1_000_000_000.0;
+      let renderer = &mut self.renderer;
+      let imgui = &mut self.imgui;
+      let mut target = self.display.draw();
+      target.clear_color(0.0, 0.0, 0.0, 1.0);
+      let (width, height) = target.get_dimensions();
+      let frame_size = FrameSize {
+        logical_size: (width.into(), height.into()),
+        hidpi_factor: 1.0,
+      };
+
+    let ui = imgui.frame(frame_size, delta_s as f32);
+        for _ in 0..clock_cycles_per_frame {
+          let (events, _) = state.machine.emulate_step();
+          if events.contains(EmuEvents::VSYNC) {
+            renderer.update_pixels(state.machine.screen_buffer());
+          }
+        }
+        renderer.draw(&mut target)?;
+        state.screen.render(&ui);
+        self
+          .gui_renderer
+          .render(&mut target, ui)
+          .map_err(|e| format_err!("GUI rendering failed: {}", e))?;
+        target.finish()?;
+    }
+    else {
+        for _ in 0..clock_cycles_per_frame {
+          state.machine.emulate_step();
+        }
+    }
+    Ok(())
+  }
 
   pub fn main(
     mut self,
